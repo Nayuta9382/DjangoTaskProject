@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}タスク管理アプリ{% endblock title %}
+{% block content %}
+
+<div class=" mx-auto mt-5" style="width:60%;">
+  <h2>タスク一覧</h2>
+  <div class="mt-2 d-flex justify-content-between align-item-center">
+    <form class="d-flex" role="search" style="width: 55%;">
+      {% csrf_token %}
+      {{ searchForm.title }}   
+      <input type="hidden" name="order" value="{{ request.GET.order|default:'desc' }}"> {% comment "" %} ソート情報を送信 {% endcomment %}
+      <input type="hidden" name="degree" value="{{ request.GET.degree }}">  {% comment "" %} 優先度の値を送信 {% endcomment %}
+      <input type="hidden" name="complet" value="{{ request.GET.complet|default:False }}">  {% comment "" %} 優先度の値を送信 {% endcomment %}
+      <button style="width:80px; margin-left:4px;" class="d-block btn btn-dark" type="submit">検索</button>
+    </form>
+    
+    <div class="d-flex gap-2">
+      <div class="dropdown">
+        
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {% if  complet|default:False  %}
+          完了
+          {% else %}
+          未完了
+          {% endif %}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark">
+          <li>
+              <a class="dropdown-item {%  if not complet %}active{% endif %}" href="?complet=False&order={{ request.GET.order }}&title={{ request.GET.title }}&degree={{ request.GET.degree }}">未完了</a>
+          </li>
+          <li>
+              <a class="dropdown-item  {% if complet %}active{% endif %}" href="?complet=True&order={{ request.GET.order }}&title={{ request.GET.title }}&degree={{ request.GET.degree }}">完了</a>
+          </li>
+        </ul>
+      </div>
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          絞り込み
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark">
+        <li>
+            <a class="dropdown-item {% if request.GET.degree == 'high' %}active{% endif %}" href="?degree=high&order={{ request.GET.order }}&title={{ request.GET.title }}&complet={{ request.GET.complet }}">優先度: 高</a>
+        </li>
+        <li>
+            <a class="dropdown-item {% if request.GET.degree == 'medium' %}active{% endif %}" href="?degree=medium&order={{ request.GET.order }}&title={{ request.GET.title }}&complet={{ complet }}">優先度: 中</a>
+        </li>
+        <li>
+            <a class="dropdown-item {% if request.GET.degree == 'low' %}active{% endif %}" href="?degree=low&order={{ request.GET.order }}&title={{ request.GET.title }}&complet={{ complet }}">優先度: 低</a>
+        </li>
+        </ul>
+      </div>
+      
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          並び替え
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark">
+            <li>
+                <a class="dropdown-item {% if request.GET.order == 'asc' or not request.GET.order %}active{% endif %}" href="?order=asc&title={{ request.GET.title }}&degree={{ request.GET.degree }}&complet={{ complet }}">期限が近い順</a>
+            </li>
+            <li>
+                <a class="dropdown-item {% if request.GET.order == 'desc' %}active{% endif %}" href="?order=desc&title={{ request.GET.title }}&degree={{ request.GET.degree }}&complet={{ complet }}">期限が遠い順</a>
+            </li>
+        </ul>
+      </div>
+      
+    </div>
+       
+    </div>
+    <ul class="list-group mt-2">
+       
+        {% for task in object_list %}
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                  <a href="{% url 'task:detail' task.id %}" style="text-decoration:none; {% if not task.complet_flg and task.get_status == 2  %} color: red !important; {% endif %}" class="d-block fw-medium link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover ">{{ task.title }}</a>
+                  <span>{{ task.deadline }}</span>
+                </div>
+                {% if not task.complet_flg and task.get_status == 1 %}
+                <p style="font-size:12px; margin-right:10px; color:red;">期限が近づいています</p>
+                {% endif %}
+                {% if not task.complet_flg and task.get_status == 2 %}
+                <p style="font-size:12px; margin-right:10px; color:red;">期限切れです</p>
+                {% endif %}
+                <span class="badge  {{ task.get_degree_class }} rounded-pill">{{ task.get_degree_display }}</span>
+              </li>
+        {% endfor %}
+      
+      </ul>
+</div>
+
+{% comment %} {% for task in object_list %}
+<li>{{ task.detail }}</li>
+{% endfor %} {% endcomment %}
+
+{% endblock content %}

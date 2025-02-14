@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}
+詳細
+{% endblock  %}
+{% block content %}
+   
+
+    <h3 class="mt-5 w-50 mx-auto ">{{ object.title }}</h3>
+    {% if  object.complet_flg %}
+        <p class="w-50 mx-auto" style="margin-top:10px; color:red;">このタスクは完了しています</p>
+    {% endif %}
+    {% if not object.complet_flg and task.get_status == 1 %}
+        <p class="w-50 mx-auto" style="margin-right:10px; color:red;">期限が近づいています</p>
+    {% endif %}
+    {% if not task.complet_flg and task.get_status == 2 %}
+        <p class="w-50 mx-auto" style="margin-right:10px; color:red;">期限切れです</p>
+    {% endif %}
+    <div class="mt-4 mx-auto d-flex flex-column  align-items-center gap-3"  >
+    {% csrf_token %}
+    <div class="w-50">
+        <label  class="form-label">詳細</label>
+        <p class="" style="padding-left:10px">{{ object.detail }}</p>
+        <label  class="form-label">期限</label>
+        <p class="" style="padding-left:10px">{{ object.deadline }}</p>
+        <label  class="form-label">優先度</label>
+        <div class="" style="padding-left:10px">
+            <span class="badge  {{ task.get_degree_class }} rounded-pill">{{ task.get_degree_display }}</span>
+        </div>
+        <div style="padding-right:20px;" class="mt-1 d-flex justify-content-end gap-3 w-100" >
+            {% if not  object.complet_flg %} <a href="{% url 'task:update' object.id %}" style="width: fit-content;" class="w-fit d-block btn btn-outline-dark">編集</a> {% endif %}
+            <a href="{% url 'task:delete' object.id %}" style="width: fit-content;" class="w-fit d-block btn btn-secondary">
+                {% if  object.complet_flg %}
+                未完了
+                {% else %}
+                完了
+                 {% endif %}
+            </a>
+        </div>
+
+      </div>
+
+   
+
+    {% comment %} <button class="mt-1 d-block w-25 btn btn-dark " type="submit">登録</button> {% endcomment %}
+</div>
+    {% comment %} <h1>{{ object.title }}</h1>
+    <p><strong>ID:</strong> {{ object.id }}</p>
+    <p><strong>ユーザー:</strong> {{ object.user.username }}</p>
+    <p><strong>詳細:</strong> {{ object.detail }}</p>
+    <p><strong>締切:</strong> {{ object.deadline }}</p> {% endcomment %}
+  
+
+
+{% endblock content %}
+
+
+
