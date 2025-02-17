@@ -13,7 +13,7 @@
         <p class="w-50 mx-auto" style="margin-right:10px; color:red;">期限が近づいています</p>
     {% endif %}
     {% if not task.complet_flg and task.get_status == 2 %}
-        <p class="w-50 mx-auto" style="margin-right:10px; color:red;">期限切れです</p>
+        <p class="w-50 mx-auto" style="margin-right:10px; color:red;">期限切れです  </p>
     {% endif %}
     <div class="mt-4 mx-auto d-flex flex-column  align-items-center gap-3"  >
     {% csrf_token %}
